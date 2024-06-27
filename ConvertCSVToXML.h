@@ -8,8 +8,7 @@
 #define CURRENCY_PAIR_LENGTH 6
 #define LOT_SIZE 100000
 
-bool ValidateTradeTokens(char* fields[CSV_FIELDS], int lineCount);
-bool ConvertTokensToTradeRecord(char* fields[CSV_FIELDS], TradeRecord* tradeRecord);
-bool ParseTradeLine(const char* line, TradeRecord* tradeRecord, int lineCount);
-void WriteTradesToXML(const TradeRecord* tradeRecords, int count, const char* outputFilePath);
-void ConvertCSVToXML(FILE* inputFile, const char* outputFilePath);
+bool validateTradeLine(char* line, int lineCount);
+void parseTradeLine(char* line, TradeRecord* tradeObjects, int* objectCount, int* lineCount);
+void writeTradeRecordsToXML(const TradeRecord* tradeObjects, int objectCount);
+void ConverTradeFromCSVToXML(FILE* stream);
