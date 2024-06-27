@@ -5,7 +5,7 @@
 #include "ConvertCSVToXML.h"
 
 bool validateTradeLine(char* line, int lineCount) {
-    char* fields[3];
+    char* fields[NUM_FIELDS];
     int fieldCount = 0;
     char* token = strtok(line, ",");
     while (token != NULL) {
@@ -13,12 +13,12 @@ bool validateTradeLine(char* line, int lineCount) {
         token = strtok(NULL, ",");
     }
 
-    if (fieldCount != 3) {
+    if (fieldCount != NUM_FIELDS) {
         fprintf(stderr, "WARN: Line %d malformed. Only %d field(s) found.\n", lineCount + 1, fieldCount);
         return false;
     }
 
-    if (strlen(fields[0]) != 6) {
+    if (strlen(fields[0]) != CURRENCY_LENGTH) {
         fprintf(stderr, "WARN: Trade currencies on line %d malformed: '%s'\n", lineCount + 1, fields[0]);
         return false;
     }
@@ -39,12 +39,12 @@ bool validateTradeLine(char* line, int lineCount) {
 }
 
 void parseTradeLine(char* line, TradeRecord* tradeObjects, int* objectCount, int* lineCount) {
-    if (!validateLine(line, *lineCount)) {
+    if (!validateTradeLine(line, *lineCount)) {
         (*lineCount)++;
         return;
     }
 
-    char* fields[3];
+    char* fields[NUM_FIELDS];
     int fieldCount = 0;
     char* token = strtok(line, ",");
     while (token != NULL) {
@@ -67,10 +67,10 @@ void parseTradeLine(char* line, TradeRecord* tradeObjects, int* objectCount, int
     (*lineCount)++;
 }
 
-void writeTradeRecordsToXMLL(const TradeRecords* tradeObjects, int objectCount) {
-    FILE* outFile = fopen("output.xml", "w");
+void writeTradeRecordsToXML(const TradeRecord* tradeObjects, int objectCount) {
+    FILE* outFile = fopen(XML_FILENAME, "w");
     if (outFile == NULL) {
-        fprintf(stderr, "ERROR: Unable to open output file\n");
+        fprintf(stderr, "ERROR: Unable to open output file '%s'\n", XML_FILENAME);
         return;
     }
     fprintf(outFile, "<TradeRecords>\n");
@@ -86,17 +86,17 @@ void writeTradeRecordsToXMLL(const TradeRecords* tradeObjects, int objectCount) 
     fclose(outFile);
 }
 
-void ConverTradeFromCSVToXML(FILE* stream) {
-    char line[1024];
-    TradeRecords tradeObjects[1024];
+void ConvertTradeFromCSVToXML(FILE* stream) {
+    char line[MAX_LINE_LENGTH];
+    TradeRecord tradeObjects[MAX_TRADE_OBJECTS];
     int lineCount = 0;
     int objectCount = 0;
 
     while (fgets(line, sizeof(line), stream)) {
-        parseLine(line, tradeObjects, &objectCount, &lineCount);
+        parseTradeLine(line, tradeObjects, &objectCount, &lineCount);
     }
 
-    writeXML(tradeObjects, objectCount);
+    writeTradeRecordsToXML(tradeObjects, objectCount);
     printf("INFO: %d trades processed\n", objectCount);
 }
 
@@ -108,7 +108,7 @@ int main() {
         perror("Error opening file");
         return 1;
     }
-    ConverTradeFromCSVToXML(stream);
+    ConvertTradeFromCSVToXML(stream);
 
     fclose(stream);
 
