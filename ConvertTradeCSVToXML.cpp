@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "ConvertCSVToXML.h"
+#include "ConvertTradeCSVToXML.h"
 
 bool validateTradeLine(char* line, int lineCount) {
     char* fields[NUM_FIELDS];
