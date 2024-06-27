@@ -1,5 +1,4 @@
 #include "Converter.h"
-#include "StringHelpers.h"
 #include "TradeRecord.h"
 
 #define MAX_LINE_LENGTH 1024
